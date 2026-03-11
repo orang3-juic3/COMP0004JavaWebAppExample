@@ -16,7 +16,7 @@
   <url>http://localhost:8080</url>
 
   <properties>
-    <tomcat.version>11.0.4</tomcat.version>
+    <tomcat.version>11.0.18</tomcat.version>
     <jsp.version>4.0.1</jsp.version>
     <java.version>25</java.version>
     <maven.compiler.source>${java.version}</maven.compiler.source>
@@ -47,20 +47,8 @@
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
         <version>3.5.0</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>exec</goal>
-            </goals>
-          </execution>
-        </executions>
         <configuration>
-          <executable>java</executable>
-          <arguments>
-            <argument>-classpath</argument>
-            <classpath />
-            <argument>${main.class}</argument>
-          </arguments>
+          <mainClass>${main.class}</mainClass>
           <workingDirectory>${project.basedir}</workingDirectory>
         </configuration>
       </plugin>
