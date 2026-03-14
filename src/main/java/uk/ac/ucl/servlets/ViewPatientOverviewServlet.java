@@ -7,6 +7,10 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import uk.ac.ucl.model.DataFrame;
+import uk.ac.ucl.model.HospitalDataType;
+import uk.ac.ucl.model.Model;
+import uk.ac.ucl.model.StringMatcher;
 
 import java.io.IOException;
 
@@ -27,6 +31,26 @@ public class ViewPatientOverviewServlet extends HttpServlet {
     }
     @Override
     protected final void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+        try {
+            final Model model = Model.getInstance();
+            String id = req.getParameter("id");
+            DataFrame patientDetails = model.searchDataFrame(HospitalDataType.GENERAL, id, StringMatcher.EXACT_MATCHER);
+            if (patientDetails.getRowCount() != 1) {
+                throw new IOException("Could not find a unique person with id " + id);
+            }
+            String firstName = patientDetails.getValue("FIRST", 0);
+            String lastName = patientDetails.getValue("LAST", 0);
+            req.setAttribute("firstName", firstName);
+            req.setAttribute("lastName", lastName);
+            req.setAttribute("id", id);
+            ServletContext context = getServletContext();
+            RequestDispatcher dispatch = context.getRequestDispatcher("/patient-overview.html");
+            dispatch.forward(req, res);
+        } catch (IOException e) {
+            ServletContext context = getServletContext();
+            RequestDispatcher dispatch = context.getRequestDispatcher("/500.html");
+            dispatch.forward(req, res);
+        }
 
     }
 }

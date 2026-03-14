@@ -9,11 +9,14 @@ import java.util.List;
 import java.util.Map;
 
 public class Model {
+
     private static Model instance = null;
     private final Map<HospitalDataType, DataFrame> frames = new HashMap<>();
     // todo replace
     private final Map<HospitalDataType, Path> dataPathMapping = Map.of(HospitalDataType.GENERAL, Path.of("data", "patients100.csv"), HospitalDataType.ALLERGIES, Path.of("data", "allergies100.csv"));
 
+
+    private Model() {}
     public static Model getInstance() {
         if (instance == null) {
             instance = new Model();
