@@ -11,7 +11,8 @@ public enum HospitalDataType {
     MEDICATIONS("Medications"),
     OBSERVATIONS("Observations"),
     PROCEDURES("Procedures"),
-    TRANSIENT("");
+    TRANSIENT(""),
+    SEARCH("Search Results");
     private final String readableName;
     HospitalDataType(String readableName) {
         this.readableName = readableName;

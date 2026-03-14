@@ -29,14 +29,14 @@ public class ViewPatientDomainDataServlet extends AbstractViewDataFrameServlet {
             //TODO validate parameters
             setAttributes(req);
             String id = req.getParameter("id");
-            DataFrame patientDetails = model.searchDataFrame(HospitalDataType.GENERAL, id, StringMatcher.EXACT_MATCHER);
+            DataFrame patientDetails = model.searchDataFrame(HospitalDataType.GENERAL, id, StringMatcher.EXACT);
             if (patientDetails.getRowCount() != 1) {
                 throw new IOException("Could not find a unique person with id " + id);
             }
             String firstName = patientDetails.getValue("FIRST", 0);
             String lastName = patientDetails.getValue("LAST", 0);
             HospitalDataType domainToSearch = HospitalDataType.valueOf(req.getParameter("dataType"));
-            req.setAttribute("data", model.searchDataFrame(domainToSearch, id, StringMatcher.EXACT_MATCHER));
+            req.setAttribute("data", model.searchDataFrame(domainToSearch, id, StringMatcher.EXACT));
             req.setAttribute("dataTypeReadable", lastName + ", " + firstName + ": " + domainToSearch.toReadableName());
             ServletContext context = getServletContext();
             RequestDispatcher dispatch = context.getRequestDispatcher("/dataFrameDisplay.jsp");

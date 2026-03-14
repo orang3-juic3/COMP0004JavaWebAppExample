@@ -10,7 +10,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import uk.ac.ucl.model.*;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Objects;
 
 /**
  * The SearchServlet handles HTTP requests for performing patient searches.
@@ -53,31 +53,34 @@ public class SearchServlet extends HttpServlet {
         // The "searchstring" parameter name matches the 'name' attribute of the input field in search.html.
         String searchString = req.getParameter("searchstring");
         final Model model = Model.getInstance();
-
+        // This try catch block corresponds to errors caused by the server
         try {
             // 2. Get the singleton instance of the Model.
             // The Model handles the actual data processing and search logic.
             HospitalDataType dataType;
+            DataFrame data = null;
+            // This try catch block corresponds to errors caused by user malformed queries
             try {
+                if (searchString == null || searchString.trim().isEmpty()) {
+                    throw new IllegalArgumentException("Search string is empty");
+                }
                 dataType = HospitalDataType.valueOf(req.getParameter("dataType"));
-            } catch (IllegalArgumentException | NullPointerException e) {
+                if (dataType == HospitalDataType.SEARCH) {
+                    throw new IllegalArgumentException("Searching within search results is not supported");
+                }
+                if (dataType == HospitalDataType.TRANSIENT) {
+                    final String id = Objects.requireNonNull(req.getParameter("id"));
+                    final HospitalDataType targetType = HospitalDataType.valueOf(req.getParameter("targetType"));
+                    data = model.searchDataFrame(targetType, id, StringMatcher.EXACT);
+                    data = model.searchDataFrame(data, searchString, StringMatcher.DEFAULT);
+                }
+            } catch (IllegalArgumentException | NullPointerException | IOException e) {
                 send404(req, res);
                 return;
             }
-            if (dataType == HospitalDataType.TRANSIENT) {
-                send404(req, res);
-                return;
-            }
-
-            // 3. Basic validation of search input.
-            if (searchString == null || searchString.trim().isEmpty()) {
-                // If the user didn't enter anything, set an error message to be displayed on the result page.
-                req.setAttribute("errorMessage", "Please enter a search term."); // TODO
-            } else {
-                req.setAttribute("data", model.searchDataFrame(dataType, searchString, StringMatcher.DEFAULT_MATCHER));
-                req.setAttribute("dataTypeReadable", "Search Results");
-                req.setAttribute("dataTypeRaw", HospitalDataType.TRANSIENT);
-            }
+            req.setAttribute("data", data == null ? model.searchDataFrame(dataType, searchString, StringMatcher.DEFAULT) : data);
+            req.setAttribute("dataTypeReadable", "Search Results");
+            req.setAttribute("dataTypeRaw", HospitalDataType.SEARCH);
 
             // 5. Forward the request to the JSP page for display.
             // RequestDispatcher.forward() is used to send the request/response objects to another resource (JSP).

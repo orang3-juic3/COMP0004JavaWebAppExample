@@ -22,16 +22,18 @@
     .domain-links {
       list-style-type: none;
       padding: 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr; /* Split into 2 columns */
+      gap: 15px;
     }
     .domain-links li {
-      margin: 15px 0;
       padding: 10px;
       background-color: #333;
       border-left: 4px solid #66b2ff;
       border-radius: 4px;
     }
     .domain-links a {
-      font-size: 18px;
+      font-size: 16px;
       font-weight: bold;
       display: block;
       color: #66b2ff;
@@ -57,18 +59,22 @@
 <div class="overview-container">
   <div class="patient-header">
     <h3><%= lastName %>, <%= firstName %></h3>
-    <p style="color: #aaa; font-size: 14px;">Patient ID: <%= id %></p>
+    <p style="color: #aaa; font-size: 14px; margin: 0;">Patient ID: <%= id %></p>
   </div>
 
   <p>Select a category below to view detailed records for this patient:</p>
 
   <ul class="domain-links">
-    <li>
-      <a href="patient-info?id=<%= id %>&dataType=GENERAL">View General Patient Information</a>
-    </li>
-    <li>
-      <a href="patient-info?id=<%= id %>&dataType=ALLERGIES">View Allergy Information</a>
-    </li>
+    <li><a href="patient-info?id=<%= id %>&dataType=GENERAL">General Information</a></li>
+    <li><a href="patient-info?id=<%= id %>&dataType=ALLERGIES">Allergies</a></li>
+    <li><a href="patient-info?id=<%= id %>&dataType=CAREPLANS">Care Plans</a></li>
+    <li><a href="patient-info?id=<%= id %>&dataType=CONDITIONS">Conditions</a></li>
+    <li><a href="patient-info?id=<%= id %>&dataType=ENCOUNTERS">Encounters</a></li>
+    <li><a href="patient-info?id=<%= id %>&dataType=IMAGINGSTUDIES">Imaging Studies</a></li>
+    <li><a href="patient-info?id=<%= id %>&dataType=IMMUNIZATIONS">Immunizations</a></li>
+    <li><a href="patient-info?id=<%= id %>&dataType=MEDICATIONS">Medications</a></li>
+    <li><a href="patient-info?id=<%= id %>&dataType=OBSERVATIONS">Observations</a></li>
+    <li><a href="patient-info?id=<%= id %>&dataType=PROCEDURES">Procedures</a></li>
   </ul>
 </div>
 

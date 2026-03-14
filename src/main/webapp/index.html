@@ -4,15 +4,51 @@
   <meta charset="UTF-8">
   <title>Patient Data</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    .home-container {
+      background-color: #2c2c2c;
+      padding: 20px;
+      border: 1px solid #444;
+      border-radius: 8px;
+      max-width: 600px;
+      margin-top: 20px;
+    }
+    .nav-list {
+      list-style-type: none;
+      padding: 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr; /* 2 columns for a cleaner layout */
+      gap: 15px;
+    }
+    .nav-list li {
+      background-color: #333;
+      border-left: 4px solid #66b2ff;
+      border-radius: 4px;
+      padding: 10px;
+    }
+    .nav-list a {
+      font-size: 16px;
+      font-weight: bold;
+      display: block;
+    }
+  </style>
 </head>
 <body>
-<h2>Welcome to the Patient Data App</h2>
+<h2>Welcome to the Hospital Data App</h2>
 
-<nav>
-  <ul>
-    <li>
-      <a href="general-info">View general patient information</a>
-    </li>
+<nav class="home-container">
+  <h3 style="margin-top: 0;">Global Database Records</h3>
+  <ul class="nav-list">
+    <li><a href="general-info">General Patient Info</a></li>
+    <li><a href="allergies">Allergies</a></li>
+    <li><a href="care-plans">Care Plans</a></li>
+    <li><a href="conditions">Conditions</a></li>
+    <li><a href="encounters">Encounters</a></li>
+    <li><a href="imaging-studies">Imaging Studies</a></li>
+    <li><a href="immunizations">Immunizations</a></li>
+    <li><a href="medications">Medications</a></li>
+    <li><a href="observations">Observations</a></li>
+    <li><a href="procedures">Procedures</a></li>
   </ul>
 </nav>
 

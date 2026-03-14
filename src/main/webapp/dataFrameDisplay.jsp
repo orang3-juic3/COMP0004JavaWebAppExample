@@ -36,7 +36,7 @@
             background-color: #444;
         }
         <%
-            if ((request.getAttribute("dataTypeRaw") != HospitalDataType.TRANSIENT)) {
+            if ((request.getAttribute("dataTypeRaw") != HospitalDataType.SEARCH)) {
         %>
         .search-container {
             background-color: #333;
@@ -73,12 +73,20 @@
 <h2><%= dataType %></h2>
 <a href="index.html">&larr; Back to Home</a>
 <%
-    if ((request.getAttribute("dataTypeRaw") != HospitalDataType.TRANSIENT)) {
+    if ((request.getAttribute("dataTypeRaw") != HospitalDataType.SEARCH)) {
 %>
 <div class="search-container">
     <form method="POST" action="/runsearch">
         <input type="text" name="searchstring" placeholder="Search patients..." required />
         <input type="hidden" name="dataType" value="<%= request.getAttribute("dataTypeRaw").toString()%>" />
+        <%
+            if (request.getParameter("id") != null && request.getParameter("dataType") != null) {
+        %>
+        <input type="hidden" name="id" value="<%= request.getParameter("id") %>" />
+        <input type="hidden" name="targetType" value="<%= request.getParameter("dataType") %>" />
+        <%
+            }
+        %>
         <input type="submit" value="Search" />
     </form>
 </div>
@@ -92,7 +100,7 @@
     <tr>
         <%
             List<String> names = df.getColumnNames();
-            for (String name : df.getColumnNames()) {
+            for (String name : names) {
         %>
         <th><%= name %></th>
         <% } %>
@@ -105,9 +113,22 @@
     <tr>
         <%
             for (String name : names) {
+                String cellValue = df.getValue(name, rowIndex);
+                boolean isClickablePatientId =
+                        name.equalsIgnoreCase("PATIENT") ||
+                                (request.getAttribute("dataTypeRaw") == HospitalDataType.GENERAL && name.equalsIgnoreCase("ID"));
+
+                if (isClickablePatientId && cellValue != null && !cellValue.isEmpty()) {
         %>
-        <td><%= df.getValue(name, rowIndex) %></td>
-        <% } %>
+        <td><a href="patient-overview?id=<%= cellValue %>"><%= cellValue %></a></td>
+        <%
+        } else {
+        %>
+        <td><%= cellValue %></td>
+        <%
+                }
+            }
+        %>
     </tr>
     <% } %>
     </tbody>

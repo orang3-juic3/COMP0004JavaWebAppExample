@@ -34,7 +34,7 @@ public class ViewPatientOverviewServlet extends HttpServlet {
         try {
             final Model model = Model.getInstance();
             String id = req.getParameter("id");
-            DataFrame patientDetails = model.searchDataFrame(HospitalDataType.GENERAL, id, StringMatcher.EXACT_MATCHER);
+            DataFrame patientDetails = model.searchDataFrame(HospitalDataType.GENERAL, id, StringMatcher.EXACT);
             if (patientDetails.getRowCount() != 1) {
                 throw new IOException("Could not find a unique person with id " + id);
             }

@@ -4,48 +4,56 @@ import jakarta.annotation.Nonnull;
 import uk.ac.ucl.main.Main;
 
 import java.io.IOException;
-import java.nio.file.Path;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Model {
 
-    private static Model instance = null;
-    private final Map<HospitalDataType, DataFrame> frames = new HashMap<>();
-    // todo replace
+    private static volatile Model instance = null;
+    private final Map<HospitalDataType, DataFrame> coreFrames = new ConcurrentHashMap<>();
 
 
     private Model() {}
+    // https://en.wikipedia.org/wiki/Double-checked_locking#Usage_in_Java
     public static Model getInstance() {
-        if (instance == null) {
-            instance = new Model();
+        Model ref = instance;
+        if (ref == null) {
+            synchronized (Model.class) {
+                ref = instance;
+                if (ref == null) {
+                    instance = ref = new Model();
+                }
+            }
         }
-        return instance;
+        return ref;
     }
 
-    public DataFrame getFrame(HospitalDataType type) throws IOException {
+    public DataFrame getFrame(HospitalDataType type) {
         if (type == HospitalDataType.TRANSIENT) {
             throw new UnsupportedOperationException("Cannot load data from a file for a transient DataFrame!");
         }
-        if (!frames.containsKey(type)) {
-            try (DataLoader d = DataLoader.loadFromFile(Main.DATA_TYPE_PATH_MAP.get(type))) {
-                frames.put(type, d.getDataFrame());
+        return coreFrames.computeIfAbsent(type, t -> {
+            try (DataLoader d = DataLoader.loadFromFile(Main.DATA_TYPE_PATH_MAP.get(t))) {
                 return d.getDataFrame();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
-        }
-        return frames.get(type);
+        });
     }
 
     // Searches a DataFrame for a term. Returns the results as a new DataFrame
     public DataFrame searchDataFrame(@Nonnull HospitalDataType dataType, String searchTerm, StringMatcher stringMatcher) throws IOException {
-        if (dataType == HospitalDataType.TRANSIENT) {
-            throw new IllegalArgumentException("Cannot search data from a file for a transient DataFrame!");
+        if (dataType == HospitalDataType.TRANSIENT || dataType == HospitalDataType.SEARCH) {
+            throw new IllegalArgumentException("Cannot search data from a file for a transient or search DataFrame!");
         }
+        return searchDataFrame(getFrame(dataType), searchTerm, stringMatcher);
+
+    }
+    public DataFrame searchDataFrame(@Nonnull DataFrame sourceDataFrame, String searchTerm, StringMatcher stringMatcher) {
         if (searchTerm.isEmpty()) {
             throw new IllegalArgumentException("Search term cannot be empty!");
         }
-        final DataFrame sourceDataFrame = getFrame(dataType);
         final DataFrame result = DataFrame.withColumnNames(sourceDataFrame);
         final List<String> columnNames = sourceDataFrame.getColumnNames();
         final int rowCount = sourceDataFrame.getRowCount();
@@ -59,5 +67,6 @@ public class Model {
         }
         return result;
     }
+
 
 }

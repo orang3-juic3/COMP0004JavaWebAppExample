@@ -18,6 +18,7 @@ import java.nio.file.Path;
 // Builds Path objects from Strings.
 import java.nio.file.Paths;
 // Java's built-in logging API.
+import java.util.Collections;
 import java.util.Map;
 import java.util.logging.*;
 
@@ -50,7 +51,7 @@ public class Main
   // Log file written in the working directory.
   private static final String LOGFILE = "logfile.txt";
 
-  public static final Map<HospitalDataType, Path> DATA_TYPE_PATH_MAP = Map.of(
+  public static final Map<HospitalDataType, Path> DATA_TYPE_PATH_MAP = Collections.synchronizedMap(Map.of(
           HospitalDataType.GENERAL, Path.of("data", "patients100.csv"),
           HospitalDataType.ALLERGIES, Path.of("data", "allergies100.csv"),
           HospitalDataType.CAREPLANS, Path.of("data", "careplans100.csv"),
@@ -61,7 +62,7 @@ public class Main
           HospitalDataType.MEDICATIONS, Path.of("data", "medications100.csv"),
           HospitalDataType.OBSERVATIONS, Path.of("data", "observations100.csv"),
           HospitalDataType.PROCEDURES, Path.of("data", "procedures100.csv")
-  );
+  ));
 
 
   // Read the server port from either:
