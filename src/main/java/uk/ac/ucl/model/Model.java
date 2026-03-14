@@ -13,7 +13,6 @@ public class Model {
     private static Model instance = null;
     private final Map<HospitalDataType, DataFrame> frames = new HashMap<>();
     // todo replace
-    private final Map<HospitalDataType, Path> dataPathMapping = Map.of(HospitalDataType.GENERAL, Path.of("data", "patients100.csv"), HospitalDataType.ALLERGIES, Path.of("data", "allergies100.csv"));
 
 
     private Model() {}
@@ -38,14 +37,14 @@ public class Model {
     }
 
     // Searches a DataFrame for a term. Returns the results as a new DataFrame
-    public DataFrame searchDataFrame(@Nonnull HospitalDataType dataType, String searchTerm, StringMatcher stringMatcher) {
+    public DataFrame searchDataFrame(@Nonnull HospitalDataType dataType, String searchTerm, StringMatcher stringMatcher) throws IOException {
         if (dataType == HospitalDataType.TRANSIENT) {
             throw new IllegalArgumentException("Cannot search data from a file for a transient DataFrame!");
         }
         if (searchTerm.isEmpty()) {
             throw new IllegalArgumentException("Search term cannot be empty!");
         }
-        final DataFrame sourceDataFrame = frames.get(dataType);
+        final DataFrame sourceDataFrame = getFrame(dataType);
         final DataFrame result = DataFrame.withColumnNames(sourceDataFrame);
         final List<String> columnNames = sourceDataFrame.getColumnNames();
         final int rowCount = sourceDataFrame.getRowCount();

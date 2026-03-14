@@ -44,7 +44,7 @@ public class ViewPatientOverviewServlet extends HttpServlet {
             req.setAttribute("lastName", lastName);
             req.setAttribute("id", id);
             ServletContext context = getServletContext();
-            RequestDispatcher dispatch = context.getRequestDispatcher("/patient-overview.html");
+            RequestDispatcher dispatch = context.getRequestDispatcher("/patient-overview.jsp");
             dispatch.forward(req, res);
         } catch (IOException e) {
             ServletContext context = getServletContext();

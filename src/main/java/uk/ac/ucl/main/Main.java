@@ -18,6 +18,7 @@ import java.nio.file.Path;
 // Builds Path objects from Strings.
 import java.nio.file.Paths;
 // Java's built-in logging API.
+import java.util.Map;
 import java.util.logging.*;
 
 // Tomcat API: represents the web application context (similar to a deployed webapp in Tomcat).
@@ -31,6 +32,7 @@ import org.apache.catalina.webresources.DirResourceSet;
 // Tomcat API: default WebResourceRoot implementation.
 import org.apache.catalina.webresources.StandardRoot;
 import uk.ac.ucl.model.DataLoader;
+import uk.ac.ucl.model.HospitalDataType;
 
 // This class contains only static helper methods and a main() entry point.
 // In production code you might encapsulate configuration and server startup into separate classes.
@@ -47,6 +49,11 @@ public class Main
   private static final String WEB_INF_CLASSES = "/WEB-INF/classes";
   // Log file written in the working directory.
   private static final String LOGFILE = "logfile.txt";
+
+  public static final Map<HospitalDataType, Path> DATA_TYPE_PATH_MAP =
+          Map.of(HospitalDataType.GENERAL, Path.of("data", "patients100.csv"),
+                  HospitalDataType.ALLERGIES, Path.of("data", "allergies100.csv"));
+
 
   // Read the server port from either:
   //  - a Java system property (-DSERVER_PORT=...) OR

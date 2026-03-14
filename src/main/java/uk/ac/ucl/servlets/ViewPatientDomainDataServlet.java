@@ -14,7 +14,7 @@ import uk.ac.ucl.model.StringMatcher;
 
 import java.io.IOException;
 
-@WebServlet("patient-info")
+@WebServlet("/patient-info")
 public class ViewPatientDomainDataServlet extends AbstractViewDataFrameServlet {
 
     @Override
