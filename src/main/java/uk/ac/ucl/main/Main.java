@@ -30,6 +30,7 @@ import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.webresources.DirResourceSet;
 // Tomcat API: default WebResourceRoot implementation.
 import org.apache.catalina.webresources.StandardRoot;
+import uk.ac.ucl.model.DataLoader;
 
 // This class contains only static helper methods and a main() entry point.
 // In production code you might encapsulate configuration and server startup into separate classes.
@@ -169,6 +170,11 @@ public class Main
   // This method wires everything together and starts the embedded server.
   public static void main(String[] args)
   {
+    try (DataLoader d = DataLoader.loadFromFile(Path.of("data", "patients100.csv")) ) {
+      System.out.println(d.getDataFrame());
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
     // Set up logging first so subsequent steps can report progress and errors.
     final Logger logger = initialiseLogger();
     // Read configuration values (with defaults).

@@ -7,7 +7,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import uk.ac.ucl.model.Model;
+import uk.ac.ucl.model.ModelExample;
 import uk.ac.ucl.model.ModelFactory;
 
 import java.io.IOException;
@@ -42,16 +42,7 @@ public class SearchServlet extends HttpServlet {
     doPost(request, response);
   }
 
-  /**
-   * Handles HTTP POST requests.
-   * This is where the core search logic resides.
-   *
-   * @param request  the HttpServletRequest object that contains the request the client has made of the servlet
-   * @param response the HttpServletResponse object that contains the response the servlet sends to the client
-   * @throws ServletException if the request for the POST could not be handled
-   * @throws IOException      if an input or output error is detected when the servlet handles the POST request
-   */
-  protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+  protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
     // 1. Retrieve the search term from the request parameter.
     // The "searchstring" parameter name matches the 'name' attribute of the input field in search.html.
     String searchString = request.getParameter("searchstring");
@@ -59,7 +50,7 @@ public class SearchServlet extends HttpServlet {
     try {
       // 2. Get the singleton instance of the Model.
       // The Model handles the actual data processing and search logic.
-      Model model = ModelFactory.getModel();
+      ModelExample model = ModelFactory.getModel();
 
       // 3. Basic validation of search input.
       if (searchString == null || searchString.trim().isEmpty()) {
@@ -81,10 +72,9 @@ public class SearchServlet extends HttpServlet {
     } catch (IOException e) {
       // 6. Exception Handling.
       // If there is an issue loading the model or data, log the error and forward to a dedicated error page.
-      request.setAttribute("errorMessage", "Error loading data: " + e.getMessage());
       ServletContext context = getServletContext();
-      RequestDispatcher dispatch = context.getRequestDispatcher("/error.jsp");
-      dispatch.forward(request, response);
+      RequestDispatcher dispatch = context.getRequestDispatcher("/500.html");
+      dispatch.forward(req, res);
     }
   }
 }

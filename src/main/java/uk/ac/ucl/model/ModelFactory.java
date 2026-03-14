@@ -1,6 +1,5 @@
 package uk.ac.ucl.model;
 
-import java.io.File;
 import java.io.IOException;
 
 // This class gives access to the model to any other class that needs it.
@@ -11,13 +10,13 @@ import java.io.IOException;
 
 public class ModelFactory
 {
-  private static Model model;
+  private static ModelExample model;
 
-  public static Model getModel() throws IOException
+  public static ModelExample getModel() throws IOException
   {
     if (model == null)
     {
-      model = new Model();
+      model = new ModelExample();
       // Note where the data file is stored in the data directory,
       // and the pathname to locate it.
       // The data should be read the file once, not every time the model is accessed!

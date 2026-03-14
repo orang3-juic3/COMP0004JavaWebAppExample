@@ -7,7 +7,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import uk.ac.ucl.model.Model;
+import uk.ac.ucl.model.ModelExample;
 import uk.ac.ucl.model.ModelFactory;
 
 import java.io.IOException;
@@ -41,7 +41,7 @@ public class ViewPatientListServlet extends HttpServlet
     try {
       // 1. Get the singleton instance of the Model.
       // The Model handles the actual data processing and data retrieval.
-      Model model = ModelFactory.getModel();
+      ModelExample model = ModelFactory.getModel();
 
       // 2. Retrieve the list of patient names from the model.
       List<String> patientNames = model.getPatientNames();
@@ -75,6 +75,8 @@ public class ViewPatientListServlet extends HttpServlet
    * @throws IOException      if an input or output error is detected when the servlet handles the POST request
    */
   protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    doGet(request, response);
+    ServletContext context = getServletContext();
+    RequestDispatcher dispatch = context.getRequestDispatcher("/404.html");
+    dispatch.forward(request, response);
   }
 }

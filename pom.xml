@@ -23,7 +23,17 @@
     <maven.compiler.target>${java.version}</maven.compiler.target>
     <main.class>uk.ac.ucl.main.Main</main.class>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <jvm.debug.args>-Ddebug=false</jvm.debug.args>
   </properties>
+
+  <profiles>
+    <profile>
+      <id>debug</id>
+      <properties>
+        <jvm.debug.args>-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005</jvm.debug.args>
+      </properties>
+    </profile>
+  </profiles>
 
   <build>
     <plugins>
@@ -48,6 +58,13 @@
         <artifactId>exec-maven-plugin</artifactId>
         <version>3.5.0</version>
         <configuration>
+          <executable>java</executable>
+          <arguments>
+            <argument>${jvm.debug.args}</argument>
+            <argument>-classpath</argument>
+            <classpath/>
+            <argument>${main.class}</argument>
+          </arguments>
           <mainClass>${main.class}</mainClass>
           <workingDirectory>${project.basedir}</workingDirectory>
         </configuration>
@@ -81,7 +98,7 @@
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-csv</artifactId>
-      <version>1.8</version>
+      <version>1.9.0</version>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
