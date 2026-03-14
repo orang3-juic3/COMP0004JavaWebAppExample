@@ -1,6 +1,7 @@
 package uk.ac.ucl.model;
 
 import jakarta.annotation.Nonnull;
+import uk.ac.ucl.main.Main;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -28,7 +29,7 @@ public class Model {
             throw new UnsupportedOperationException("Cannot load data from a file for a transient DataFrame!");
         }
         if (!frames.containsKey(type)) {
-            try (DataLoader d = DataLoader.loadFromFile(dataPathMapping.get(type))) {
+            try (DataLoader d = DataLoader.loadFromFile(Main.DATA_TYPE_PATH_MAP.get(type))) {
                 frames.put(type, d.getDataFrame());
                 return d.getDataFrame();
             }

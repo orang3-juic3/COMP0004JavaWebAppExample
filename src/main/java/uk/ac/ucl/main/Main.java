@@ -50,9 +50,18 @@ public class Main
   // Log file written in the working directory.
   private static final String LOGFILE = "logfile.txt";
 
-  public static final Map<HospitalDataType, Path> DATA_TYPE_PATH_MAP =
-          Map.of(HospitalDataType.GENERAL, Path.of("data", "patients100.csv"),
-                  HospitalDataType.ALLERGIES, Path.of("data", "allergies100.csv"));
+  public static final Map<HospitalDataType, Path> DATA_TYPE_PATH_MAP = Map.of(
+          HospitalDataType.GENERAL, Path.of("data", "patients100.csv"),
+          HospitalDataType.ALLERGIES, Path.of("data", "allergies100.csv"),
+          HospitalDataType.CAREPLANS, Path.of("data", "careplans100.csv"),
+          HospitalDataType.CONDITIONS, Path.of("data", "conditions100.csv"),
+          HospitalDataType.ENCOUNTERS, Path.of("data", "encounters100.csv"),
+          HospitalDataType.IMAGINGSTUDIES, Path.of("data", "imaging_studies100.csv"),
+          HospitalDataType.IMMUNIZATIONS, Path.of("data", "immunizations100.csv"),
+          HospitalDataType.MEDICATIONS, Path.of("data", "medications100.csv"),
+          HospitalDataType.OBSERVATIONS, Path.of("data", "observations100.csv"),
+          HospitalDataType.PROCEDURES, Path.of("data", "procedures100.csv")
+  );
 
 
   // Read the server port from either:
@@ -177,11 +186,6 @@ public class Main
   // This method wires everything together and starts the embedded server.
   public static void main(String[] args)
   {
-    try (DataLoader d = DataLoader.loadFromFile(Path.of("data", "patients100.csv")) ) {
-      System.out.println(d.getDataFrame());
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
     // Set up logging first so subsequent steps can report progress and errors.
     final Logger logger = initialiseLogger();
     // Read configuration values (with defaults).
