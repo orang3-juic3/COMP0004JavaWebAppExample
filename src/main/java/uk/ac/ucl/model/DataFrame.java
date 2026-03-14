@@ -63,9 +63,13 @@ public class DataFrame implements Iterable<Column> {
         final Column column = getOrThrow(columnName);
         column.setRowValue(row, value);
     }
+
     public void addValue(@Nonnull String columnName, @Nullable String value) {
         final Column column = getOrThrow(columnName);
         column.addRowValue(value);
+    }
+    public void removeColumn(@Nonnull String columnName) {
+        columns.remove(columnName);
     }
 
     @Override @Nonnull

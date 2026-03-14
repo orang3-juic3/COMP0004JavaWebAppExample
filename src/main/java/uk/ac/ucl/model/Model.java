@@ -7,14 +7,12 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 public class Model {
     private static Model instance = null;
     private final Map<HospitalDataType, DataFrame> frames = new HashMap<>();
     // todo replace
-    private final Map<HospitalDataType, Path> dataPathMapping = Map.of(HospitalDataType.GENERAL, Path.of("data", "patients100.csv"));
+    private final Map<HospitalDataType, Path> dataPathMapping = Map.of(HospitalDataType.GENERAL, Path.of("data", "patients100.csv"), HospitalDataType.ALLERGIES, Path.of("data", "allergies100.csv"));
 
     public static Model getInstance() {
         if (instance == null) {
@@ -35,32 +33,25 @@ public class Model {
         }
         return frames.get(type);
     }
-    private static class StringComparisonUtils {
-        // Strips both strings, and looks case-insensitively if either string contains the other
-        private static boolean isQuasiExactMatch(String source, String target) {
-            final String source2 = source.strip().toLowerCase();
-            final String target2 = target.strip().toLowerCase();
-            return target2.contains(source2) || source2.contains(target2);
-        }
-        //TODO
-        private static int calculateLevenshteinDistance(String source, String target) {
-            return 0;
-        }
-    }
 
     // Searches a DataFrame for a term. Returns the results as a new DataFrame
-    public DataFrame searchDataFrame(@Nonnull DataFrame dataFrame, String searchTerm) {
+    public DataFrame searchDataFrame(@Nonnull HospitalDataType dataType, String searchTerm, StringMatcher stringMatcher) {
+        if (dataType == HospitalDataType.TRANSIENT) {
+            throw new IllegalArgumentException("Cannot search data from a file for a transient DataFrame!");
+        }
         if (searchTerm.isEmpty()) {
             throw new IllegalArgumentException("Search term cannot be empty!");
         }
-        final DataFrame result = DataFrame.withColumnNames(dataFrame);
-        final List<String> columnNames = dataFrame.getColumnNames();
-        for (int i = 0; i < dataFrame.getRowCount(); i++) {
+        final DataFrame sourceDataFrame = frames.get(dataType);
+        final DataFrame result = DataFrame.withColumnNames(sourceDataFrame);
+        final List<String> columnNames = sourceDataFrame.getColumnNames();
+        final int rowCount = sourceDataFrame.getRowCount();
+        for (int i = 0; i < rowCount; i++) {
             final int tempI = i;
             // If any members of the row contain the string add the entire row to the DataFrame result
             // TODO This silently fails if column size mismatch
-            if (columnNames.stream().anyMatch(name -> StringComparisonUtils.isQuasiExactMatch(searchTerm, dataFrame.getValue(name, tempI)))) {
-                columnNames.forEach(name -> dataFrame.addValue(name, dataFrame.getValue(name, tempI)));
+            if (columnNames.stream().anyMatch(name -> stringMatcher.isMatch(searchTerm, sourceDataFrame.getValue(name, tempI)))) {
+                columnNames.forEach(name -> result.addValue(name, sourceDataFrame.getValue(name, tempI)));
             }
         }
         return result;

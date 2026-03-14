@@ -1,8 +1,9 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ page import="uk.ac.ucl.model.DataFrame" %>
 <%@ page import="java.util.List" %>
+<%@ page import="uk.ac.ucl.model.HospitalDataType" %>
 
-<% String dataType = (String) request.getAttribute("dataType");%>
+<% String dataType = (String) request.getAttribute("dataTypeReadable");%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -34,15 +35,56 @@
         tr:hover {
             background-color: #444;
         }
+        <%
+            if ((request.getAttribute("dataTypeRaw") != HospitalDataType.TRANSIENT)) {
+        %>
+        .search-container {
+            background-color: #333;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+            border: 1px solid #444;
+        }
+        .search-container input[type="text"] {
+            padding: 8px;
+            width: 300px;
+            border: 1px solid #555;
+            border-radius: 4px;
+            background-color: #222;
+            color: #f0f0f0;
+        }
+        .search-container input[type="submit"] {
+            padding: 8px 15px;
+            background-color: #66b2ff;
+            color: #111;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .search-container input[type="submit"]:hover {
+            background-color: #99ccff;
+        }
+        <% } %>
     </style>
 </head>
 <body>
 
 <h2><%= dataType %></h2>
 <a href="index.html">&larr; Back to Home</a>
-
 <%
-    DataFrame df = (DataFrame) request.getAttribute("patientData");
+    if ((request.getAttribute("dataTypeRaw") != HospitalDataType.TRANSIENT)) {
+%>
+<div class="search-container">
+    <form method="POST" action="/runsearch">
+        <input type="text" name="searchstring" placeholder="Search patients..." required />
+        <input type="hidden" name="dataType" value="<%= request.getAttribute("dataTypeRaw").toString()%>" />
+        <input type="submit" value="Search" />
+    </form>
+</div>
+<% } %>
+<%
+    DataFrame df = (DataFrame) request.getAttribute("data");
     if (df != null && df.getRowCount() > 0) {
 %>
 <table>

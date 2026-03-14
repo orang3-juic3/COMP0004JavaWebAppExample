@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import uk.ac.ucl.model.HospitalDataType;
+import uk.ac.ucl.model.Model;
 
 import java.io.IOException;
 
@@ -26,6 +27,24 @@ public abstract class AbstractViewDataFrameServlet extends HttpServlet {
         } else {
             ServletContext context = getServletContext();
             RequestDispatcher dispatch = context.getRequestDispatcher("/404.html");
+            dispatch.forward(req, res);
+        }
+    }
+    protected void setAttributes(HttpServletRequest req) throws IOException {
+        req.setAttribute("data", Model.getInstance().getFrame(getHospitalDataType()));
+        req.setAttribute("dataTypeReadable", getHospitalDataType().toReadableName());
+        req.setAttribute("dataTypeRaw", getHospitalDataType());
+    }
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+        try {
+            setAttributes(req);
+            ServletContext context = getServletContext();
+            RequestDispatcher dispatch = context.getRequestDispatcher("/dataFrameDisplay.jsp");
+            dispatch.forward(req, res);
+        } catch (IOException e) {
+            ServletContext context = getServletContext();
+            RequestDispatcher dispatch = context.getRequestDispatcher("/500.html");
             dispatch.forward(req, res);
         }
     }
