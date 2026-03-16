@@ -71,14 +71,13 @@
 <body>
 
 <h2><%= dataType %></h2>
-<a href="index.html">&larr; Back to Home</a>
+<a href="<%=request.getContextPath() + "/"%>">&larr; Back to Home</a>
 <%
-    if ((request.getAttribute("dataTypeRaw") != HospitalDataType.SEARCH)) {
+    if ((request.getAttribute("dataTypeRaw") != null)) {
 %>
 <div class="search-container">
     <form method="POST" action="/runsearch">
         <input type="text" name="searchstring" placeholder="Search patients..." required />
-        <input type="hidden" name="dataType" value="<%= request.getAttribute("dataTypeRaw").toString()%>" />
         <%
             if (request.getParameter("id") != null && request.getParameter("dataType") != null) {
         %>
@@ -116,7 +115,7 @@
                 String cellValue = df.getValue(name, rowIndex);
                 boolean isClickablePatientId =
                         name.equalsIgnoreCase("PATIENT") ||
-                                (request.getAttribute("dataTypeRaw") == HospitalDataType.GENERAL && name.equalsIgnoreCase("ID"));
+                                (request.getAttribute("type") == HospitalDataType.GENERAL && name.equalsIgnoreCase("ID"));
 
                 if (isClickablePatientId && cellValue != null && !cellValue.isEmpty()) {
         %>

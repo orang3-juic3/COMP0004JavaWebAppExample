@@ -39,7 +39,7 @@ public class SearchServlet extends HttpServlet {
      */
     private void send404(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         ServletContext context = getServletContext();
-        RequestDispatcher dispatch = context.getRequestDispatcher("/404.html");
+        RequestDispatcher dispatch = context.getRequestDispatcher("/404.jsp");
         dispatch.forward(req, res);
         doPost(req, res);
     }
@@ -92,7 +92,7 @@ public class SearchServlet extends HttpServlet {
             // 6. Exception Handling.
             // If there is an issue loading the model or data, log the error and forward to a dedicated error page.
             ServletContext context = getServletContext();
-            RequestDispatcher dispatch = context.getRequestDispatcher("/500.html");
+            RequestDispatcher dispatch = context.getRequestDispatcher("/500.jsp");
             dispatch.forward(req, res);
         }
     }

@@ -1,3 +1,4 @@
+<%@ page import="uk.ac.ucl.model.HospitalDataType" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <!DOCTYPE html>
 <html lang="en">
@@ -46,9 +47,8 @@
   </style>
 </head>
 <body>
-
 <h2>Patient Overview</h2>
-<a href="index.html">&larr; Back to Home</a>
+<a href="<%=request.getContextPath() + "/"%>">&larr; Back to Home</a>
 
 <%
   String id = (String) request.getAttribute("id");
@@ -65,16 +65,9 @@
   <p>Select a category below to view detailed records for this patient:</p>
 
   <ul class="domain-links">
-    <li><a href="patient-info?id=<%= id %>&dataType=GENERAL">General Information</a></li>
-    <li><a href="patient-info?id=<%= id %>&dataType=ALLERGIES">Allergies</a></li>
-    <li><a href="patient-info?id=<%= id %>&dataType=CAREPLANS">Care Plans</a></li>
-    <li><a href="patient-info?id=<%= id %>&dataType=CONDITIONS">Conditions</a></li>
-    <li><a href="patient-info?id=<%= id %>&dataType=ENCOUNTERS">Encounters</a></li>
-    <li><a href="patient-info?id=<%= id %>&dataType=IMAGINGSTUDIES">Imaging Studies</a></li>
-    <li><a href="patient-info?id=<%= id %>&dataType=IMMUNIZATIONS">Immunizations</a></li>
-    <li><a href="patient-info?id=<%= id %>&dataType=MEDICATIONS">Medications</a></li>
-    <li><a href="patient-info?id=<%= id %>&dataType=OBSERVATIONS">Observations</a></li>
-    <li><a href="patient-info?id=<%= id %>&dataType=PROCEDURES">Procedures</a></li>
+    <% for (HospitalDataType type : HospitalDataType.values()) {%>
+    <li><a href="patient-info?id=<%= id %>&type=<%=type.toString()%>"><%=type.toReadableName()%></a></li>
+    <% } %>
   </ul>
 </div>
 

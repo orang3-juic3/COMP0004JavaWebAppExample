@@ -1,3 +1,4 @@
+<%@ page import="uk.ac.ucl.model.HospitalDataType" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -17,7 +18,7 @@
       list-style-type: none;
       padding: 0;
       display: grid;
-      grid-template-columns: 1fr 1fr; /* 2 columns for a cleaner layout */
+      grid-template-columns: 1fr 1fr;
       gap: 15px;
     }
     .nav-list li {
@@ -39,16 +40,9 @@
 <nav class="home-container">
   <h3 style="margin-top: 0;">Global Database Records</h3>
   <ul class="nav-list">
-    <li><a href="general-info">General Patient Info</a></li>
-    <li><a href="allergies">Allergies</a></li>
-    <li><a href="care-plans">Care Plans</a></li>
-    <li><a href="conditions">Conditions</a></li>
-    <li><a href="encounters">Encounters</a></li>
-    <li><a href="imaging-studies">Imaging Studies</a></li>
-    <li><a href="immunizations">Immunizations</a></li>
-    <li><a href="medications">Medications</a></li>
-    <li><a href="observations">Observations</a></li>
-    <li><a href="procedures">Procedures</a></li>
+    <% for (HospitalDataType type : HospitalDataType.values()) {%>
+    <li><a href="data?type=<%=type.toString()%>"><%=type.toReadableName()%></a></li>
+    <% } %>
   </ul>
 </nav>
 

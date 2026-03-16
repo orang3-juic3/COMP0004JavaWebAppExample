@@ -23,7 +23,7 @@
     <h2>Internal Server Error</h2>
     <p>Something went wrong on our end. Please try again later.</p>
     <br>
-    <a href="index.html">&larr; Return to Home</a>
+    <a href="<%=request.getContextPath() + "/"%>">&larr; Return to Home</a>
 </div>
 
 </body>
