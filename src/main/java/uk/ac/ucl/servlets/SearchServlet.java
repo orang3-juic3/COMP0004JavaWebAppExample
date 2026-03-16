@@ -18,12 +18,12 @@ public class SearchServlet extends AbstractGetRequestServlet implements DataFram
         // this corresponds to DataFrames that are due to more complex searches that include more than one query
         // E.g. ViewInhabitantsServlet
         String existingSearch = request.getParameter("search");
+        Search newSearch;
         if (existingSearch != null) {
             try {
-                return SearchBuilder.fromSearch(Search.deserialize(existingSearch))
+                newSearch = SearchBuilder.fromSearch(Search.deserialize(existingSearch))
                         .addQuery(query)
-                        .build()
-                        .execute();
+                        .build();
             } catch (IllegalArgumentException e) {
                 throw new UserErrorException("Failed to deserialize search");
             }
@@ -42,9 +42,11 @@ public class SearchServlet extends AbstractGetRequestServlet implements DataFram
                         .usingMatcher(StringMatcher.EXACT)
                         .includingColumns(getAppropriateIDColumn(type));
             }
-            return builder.addQuery(query)
-                    .build().execute();
+            newSearch = builder.addQuery(query)
+                    .build();
         }
+        request.setAttribute("search", newSearch.serialize()); // to allow exporting to json
+        return newSearch.execute();
     }
     // the column corresponding to the patient id has different names depending on data type
     private String getAppropriateIDColumn(HospitalDataType type) {
@@ -56,6 +58,5 @@ public class SearchServlet extends AbstractGetRequestServlet implements DataFram
         if (req.getParameter("search") == null && (req.getParameter("type")) == null) {
             throw new UserErrorException("Wrong parameters");
         }
-        req.setAttribute("search", true); // so that we can't search within search results
     }
 }

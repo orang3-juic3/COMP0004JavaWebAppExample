@@ -5,6 +5,7 @@
 <%@ page import="uk.ac.ucl.main.Config" %>
 
 <% String title = (String) request.getAttribute("dataTypeReadable");
+String serialisedSearch = (String) request.getAttribute("search");
 if (title == null) {
     title = "Search Results";
 }
@@ -89,7 +90,7 @@ if (title == null) {
 
 <h2><%= title %></h2>
 <a href="<%=request.getContextPath() + "/"%>">&larr; Back to Home</a>
-<% if (request.getAttribute("search") == null) {%>
+<% if (!"Search Results".equals(title)) {%>
 <div class="search-container">
     <form method="GET" action="/run-search">
         <label>
@@ -214,36 +215,10 @@ if (title == null) {
 
     <form method="GET" action="/save-to-json" style="display: inline-block; margin: 0; margin-left: auto;">
         <%
-            java.util.Enumeration<String> pageDlParams = request.getParameterNames();
-            while (pageDlParams.hasMoreElements()) {
-                String pName = pageDlParams.nextElement();
-                String[] pValues = request.getParameterValues(pName);
-                for (String pValue : pValues) {
-                    if (pValue != null) {
-        %>
-        <input type="hidden" name="<%= pName %>" value="<%= pValue %>">
-        <%
-                    }
-                }
-            }
-            if (request.getParameter("page") == null) {
-        %>
-        <input type="hidden" name="page" value="<%= currentPage %>">
-        <%
-            }
-        %>
-        <button type="submit" style="padding: 8px 15px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">
-            Export Page to JSON
-        </button>
-    </form>
-
-    <form method="GET" action="/save-to-json" style="display: inline-block; margin: 0;">
-        <%
-            // Inject all current parameters EXCEPT the page parameter so we get all results
-            java.util.Enumeration<String> allDlParams = request.getParameterNames();
-            while (allDlParams.hasMoreElements()) {
-                String pName = allDlParams.nextElement();
-                if (!"page".equals(pName)) {
+            if (serialisedSearch == null) {
+                java.util.Enumeration<String> pageDlParams = request.getParameterNames();
+                while (pageDlParams.hasMoreElements()) {
+                    String pName = pageDlParams.nextElement();
                     String[] pValues = request.getParameterValues(pName);
                     for (String pValue : pValues) {
                         if (pValue != null) {
@@ -253,8 +228,41 @@ if (title == null) {
                         }
                     }
                 }
-            }
+            } else { %>
+        <input type="hidden" name="search" value="<%=serialisedSearch%>">
+        <% } %>
+            <% if (request.getParameter("page") == null || serialisedSearch != null) {
         %>
+        <input type="hidden" name="page" value="<%= currentPage %>">
+        <%
+            } %>
+        <button type="submit" style="padding: 8px 15px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">
+            Export Page to JSON
+        </button>
+    </form>
+
+    <form method="GET" action="/save-to-json" style="display: inline-block; margin: 0;">
+        <%
+            if (serialisedSearch == null) {
+                java.util.Enumeration<String> allDlParams = request.getParameterNames();
+                while (allDlParams.hasMoreElements()) {
+                    String pName = allDlParams.nextElement();
+                    if (!"page".equals(pName)) {
+                        String[] pValues = request.getParameterValues(pName);
+                        for (String pValue : pValues) {
+                            if (pValue != null) {
+
+        %>
+        <input type="hidden" name="<%= pName %>" value="<%= pValue %>">
+        <%
+                            }
+                        }
+                    }
+                }
+            } else {
+        %>
+        <input type="hidden" name="search" value="<%=serialisedSearch%>">
+        <%}%>
         <button type="submit" style="padding: 8px 15px; background-color: #17a2b8; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">
             Export All to JSON
         </button>

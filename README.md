@@ -1,6 +1,13 @@
-# WebAppExample
+# Patient Data Browser
 
-A minimal Java web application intended for junior developers learning the basics of Java web apps, servlets, and JSPs. The app runs an embedded Tomcat server and serves static resources from `src/main/webapp`.
+A Java web application that allows a user to browse through a hospital database.  
+The user can search for data across many domains, view individual patient profiles
+and run certain tools such as finding household members of the patient or exporting data 
+to JSON.  
+The project interprets the dataframe in spreadsheet style - this is primarily how data is displayed in the browser.  
+There can be a lot of data to browse through, particularly if `patients100000.csv` is used.   
+As a result, the web app implements pagination and caches search results.
+
 
 ## Prerequisites
 
@@ -13,6 +20,7 @@ A minimal Java web application intended for junior developers learning the basic
 - `src/main/webapp` — Static web resources and JSPs
 - `target` — Build output (created by Maven)
 - `war-file` — Packaged WAR output (created by Maven)
+- `data` — The source data csv files used to populate data frames.
 
 ## Compile
 
@@ -30,6 +38,10 @@ First compile the project, then run the main class via Maven:
 
 ```bash
 mvn clean compile exec:exec
+```  
+You can also run the debug profile if you wish to attach a debugger:
+```bash
+mvn clean compile exec:exec -Pdebug
 ```
 
 By default the server starts on port `8080`. Open:
@@ -51,8 +63,4 @@ Example (using environment variables):
 ```bash
 SERVER_PORT=9090 mvn clean compile exec:exec
 ```
-
-## Notes for Learners
-
-- The entry point is `uk.ac.ucl.main.Main` in `src/main/java/uk/ac/ucl/main/Main.java`.
-- Packaging as a WAR is useful if you want to deploy to an external Tomcat later.
+If you would like to use different data files, edit the mapping in Config.java
