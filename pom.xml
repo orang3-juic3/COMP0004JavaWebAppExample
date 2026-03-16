@@ -73,7 +73,6 @@
   </build>
 
   <dependencies>
-    <!-- Embedded tomcat -->
     <dependency>
       <groupId>org.apache.tomcat.embed</groupId>
       <artifactId>tomcat-embed-core</artifactId>

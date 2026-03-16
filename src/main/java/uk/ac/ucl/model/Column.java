@@ -28,6 +28,9 @@ public class Column {
     public void addRowValue(@Nullable String value) {
         rows.add(value);
     }
+    public void removeRowValue(int n) {
+        rows.remove(n);
+    }
 
     @Override
     public int hashCode() {

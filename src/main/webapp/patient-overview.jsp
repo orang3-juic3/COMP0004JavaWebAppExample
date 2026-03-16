@@ -69,6 +69,10 @@
     <li><a href="patient-info?id=<%= id %>&type=<%=type.toString()%>"><%=type.toReadableName()%></a></li>
     <% } %>
   </ul>
+  <p>Tools:</p>
+  <ul class="domain-links">
+    <li><a href="inhabitants?id=<%= id %>">See household members</a></li>
+  </ul>
 </div>
 
 </body>

@@ -14,13 +14,7 @@ import java.io.IOException;
 public class ViewPatientDomainDataServlet extends AbstractGetRequestServlet implements DataFrameDisplayer {
 
     @Override
-    protected void handleRequest(HttpServletRequest req) {
-        try {
-            req.setAttribute("data", computeDataFrame(req));
-        } catch (IllegalStateException | IllegalArgumentException e) {
-            throw new UserErrorException(e);
-        }
-    }
+    protected void handleRequest(HttpServletRequest req) {}
 
     private String searchFullName(String id) {
         SearchBuilder searchBuilder = new SearchBuilder(HospitalDataType.GENERAL)

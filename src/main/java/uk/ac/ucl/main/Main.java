@@ -32,8 +32,7 @@ import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.webresources.DirResourceSet;
 // Tomcat API: default WebResourceRoot implementation.
 import org.apache.catalina.webresources.StandardRoot;
-import uk.ac.ucl.model.DataLoader;
-import uk.ac.ucl.model.HospitalDataType;
+import uk.ac.ucl.model.*;
 
 // This class contains only static helper methods and a main() entry point.
 // In production code you might encapsulate configuration and server startup into separate classes.

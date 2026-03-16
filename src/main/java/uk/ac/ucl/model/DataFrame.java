@@ -68,8 +68,13 @@ public class DataFrame implements Iterable<Column> {
         final Column column = getOrThrow(columnName);
         column.addRowValue(value);
     }
+
     public void removeColumn(@Nonnull String columnName) {
         columns.remove(columnName);
+    }
+
+    public void removeRow(int row) {
+        columns.values().forEach(column -> column.removeRowValue(row));
     }
 
     @Override @Nonnull

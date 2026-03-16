@@ -13,6 +13,11 @@ public class SearchBuilder {
     public SearchBuilder(@Nonnull HospitalDataType dataType) {
         this.dataType = dataType;
     }
+    public static SearchBuilder fromSearch(@Nonnull Search search) {
+        final SearchBuilder sb = new SearchBuilder(search.getType());
+        sb.components.addAll(search.getComponents());
+        return sb;
+    }
 
     public SearchBuilder addQuery(@Nonnull String query) {
         if (current != null) {
@@ -46,6 +51,10 @@ public class SearchBuilder {
         current.setColumns(List.of(columnNames));
         return this;
     }
+    public SearchBuilder matchingExactly(String column, String value) {
+        addQuery(value).includingColumns(column).usingMatcher(StringMatcher.EXACT);
+        return this;
+    }
     public SearchBuilder changeType(HospitalDataType dataType) {
         this.dataType = dataType;
         return this;
@@ -58,5 +67,4 @@ public class SearchBuilder {
         components.add(current);
         return new Search(components, dataType);
     }
-
 }

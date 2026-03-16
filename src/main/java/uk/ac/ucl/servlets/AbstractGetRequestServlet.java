@@ -6,6 +6,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import uk.ac.ucl.model.DataFrame;
+import uk.ac.ucl.model.Model;
 import uk.ac.ucl.model.UserErrorException;
 
 import java.io.IOException;
@@ -35,9 +37,7 @@ public abstract class AbstractGetRequestServlet extends HttpServlet {
         RequestDispatcher dispatch;
         try {
             handleRequest(req);
-            if (this instanceof DataFrameDisplayer && req.getParameter("page") == null) {
-                req.setAttribute("page", 0);
-            }
+            handleDataFrame(req);
             dispatch = context.getRequestDispatcher(getTargetJspPage());
         } catch (UserErrorException e) {
             dispatch = context.getRequestDispatcher("/404.jsp");
@@ -45,5 +45,24 @@ public abstract class AbstractGetRequestServlet extends HttpServlet {
             dispatch = context.getRequestDispatcher("/500.jsp");
         }
         dispatch.forward(req, res);
+    }
+    private void handleDataFrame(HttpServletRequest req) {
+        if (this instanceof DataFrameDisplayer) {
+            final DataFrame toDisplay = ((DataFrameDisplayer) this).computeDataFrame(req);
+            req.setAttribute("data", toDisplay);
+            if (req.getParameter("page") == null) {
+                req.setAttribute("page", 0);
+            } else {
+                try {
+                    int page = Integer.parseInt(req.getParameter("page"));
+                    req.setAttribute("page", page);
+                    if (page < 0 || page * Model.RESULTS_PER_PAGE> toDisplay.getRowCount() - 1 ) {
+                        throw new NumberFormatException();
+                    }
+                } catch (NumberFormatException e) {
+                    throw new UserErrorException("Invalid page number");
+                }
+            }
+        }
     }
 }

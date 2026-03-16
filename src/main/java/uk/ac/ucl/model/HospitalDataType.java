@@ -10,9 +10,7 @@ public enum HospitalDataType {
     IMMUNIZATIONS("Immunizations"),
     MEDICATIONS("Medications"),
     OBSERVATIONS("Observations"),
-    PROCEDURES("Procedures"),
-    TRANSIENT("xxxx"),
-    SEARCH("xxxx");
+    PROCEDURES("Procedures");
     private final String readableName;
     HospitalDataType(String readableName) {
         this.readableName = readableName;
