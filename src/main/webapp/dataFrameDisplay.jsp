@@ -1,9 +1,8 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ page import="uk.ac.ucl.model.DataFrame" %>
 <%@ page import="java.util.List" %>
-<%@ page import="uk.ac.ucl.model.HospitalDataType" %>
 <%@ page import="java.nio.charset.StandardCharsets" %>
-<%@ page import="uk.ac.ucl.model.Model" %>
+<%@ page import="uk.ac.ucl.main.Config" %>
 
 <% String title = (String) request.getAttribute("dataTypeReadable");
 if (title == null) {
@@ -89,8 +88,8 @@ if (title == null) {
 <body>
 
 <h2><%= title %></h2>
-<% if (request.getAttribute("search") == null) {%>
 <a href="<%=request.getContextPath() + "/"%>">&larr; Back to Home</a>
+<% if (request.getAttribute("search") == null) {%>
 <div class="search-container">
     <form method="GET" action="/run-search">
         <label>
@@ -119,9 +118,9 @@ if (title == null) {
         if (request.getAttribute("page") != null) {
             currentPage = (Integer) request.getAttribute("page");
         }
-        int startRow = currentPage * Model.RESULTS_PER_PAGE;
-        int endRow = Math.min(startRow + Model.RESULTS_PER_PAGE, df.getRowCount());
-        int maxPage = Math.ceilDiv(df.getRowCount() ,Model.RESULTS_PER_PAGE) - 1;
+        int startRow = currentPage * Config.RESULTS_PER_PAGE;
+        int endRow = Math.min(startRow + Config.RESULTS_PER_PAGE, df.getRowCount());
+        int maxPage = Math.ceilDiv(df.getRowCount() ,Config.RESULTS_PER_PAGE) - 1;
 %>
 <table>
     <thead>

@@ -1,10 +1,10 @@
 package uk.ac.ucl.model;
 
-import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
-
+/**
+ * The final immutable search object that can be used as a key in a Map for caching.
+ */
 public class Search {
     private final List<SearchComponent> components;
     private final HospitalDataType type;
@@ -16,6 +16,10 @@ public class Search {
 
     public DataFrame execute() {
         final Model model = Model.getInstance();
+        final DataFrame cachedFrame = model.getSearchFrame(this);
+        if (cachedFrame != null ) {
+            return cachedFrame;
+        }
         DataFrame currentFrame = model.getFrame(type);
         for (SearchComponent component : components) {
             final DataFrame result = DataFrame.withColumnNames(currentFrame);
@@ -27,8 +31,6 @@ public class Search {
             for (int i = 0; i < rowCount; i++) {
                 final int tempI = i;
                 final DataFrame tempCurrentFrame = currentFrame;
-                // If any members of the row contain the string add the entire row to the DataFrame result
-                // TODO This silently fails if column size mismatch
                 if (columnNames.stream().anyMatch(name -> (component.getMatcher())
                         .isMatch(component.getSearchTerm(), tempCurrentFrame.getValue(name, tempI)))) {
                     result.getColumnNames()
@@ -37,13 +39,19 @@ public class Search {
             }
             currentFrame = result;
         }
+        model.cacheSearchFrame(this, currentFrame);
         return currentFrame;
     }
 
-
+    /* Creates a base64 string representation of this object. This string is then passed in url parameters to preserve
+    state where necessary.
+    To prevent delimiter mangling, each query and column name is encoded to base64 before being delimited.
+    To prevent URL encoding from replacing delimiters, the final string is encoded again to base64
+    */
     public String serialize() {
         StringBuilder sb = new StringBuilder();
         sb.append(this.type.name());
+        // so that the illegal character = is not included in URLS
         Base64.Encoder b64Encoder = Base64.getUrlEncoder().withoutPadding();
         for (SearchComponent component : components) {
             sb.append("|");
@@ -58,7 +66,7 @@ public class Search {
         }
         return b64Encoder.encodeToString(sb.toString().getBytes(StandardCharsets.UTF_8));
     }
-
+    // Reconstructs a search object from the string representation
     public static Search deserialize(String base64UrlString) {
         if (base64UrlString == null || base64UrlString.isEmpty()) {
             throw new IllegalArgumentException("Serialized string cannot be empty!");
@@ -95,9 +103,10 @@ public class Search {
 
     @Override
     public boolean equals(Object o) {
+        if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Search search = (Search) o;
-        return new HashSet<>(search.components).containsAll(components) && type == search.type;
+        return type == search.type && Objects.equals(components, search.components);
     }
 
     @Override

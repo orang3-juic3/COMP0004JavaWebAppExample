@@ -1,5 +1,5 @@
 <%@ page import="java.util.List" %>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html;charset=UTF-8" %>
 
 <html>
 <head>
@@ -19,7 +19,7 @@
   <%
     }
     List<String> patients = (List<String>) request.getAttribute("result");
-    if (patients != null && patients.size() != 0)
+    if (patients != null && !patients.isEmpty())
     {
     %>
     <ul>

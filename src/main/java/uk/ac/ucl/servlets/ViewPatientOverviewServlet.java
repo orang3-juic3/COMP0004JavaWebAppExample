@@ -6,7 +6,6 @@ import uk.ac.ucl.model.*;
 
 
 @WebServlet("/patient-overview")
-
 public class ViewPatientOverviewServlet extends AbstractGetRequestServlet {
 
     @Override

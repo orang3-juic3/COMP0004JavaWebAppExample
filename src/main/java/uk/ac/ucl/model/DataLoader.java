@@ -7,7 +7,11 @@ import org.apache.commons.csv.CSVRecord;
 import java.io.*;
 import java.nio.file.Path;
 
+/**
+ * A class that loads the core CSV files into memory as {@link DataFrame}s.
+ */
 public class DataLoader implements Closeable {
+
     private Reader fileReader;
     private DataFrame data;
     private final CSVFormat csvFormat = CSVFormat.DEFAULT.builder()

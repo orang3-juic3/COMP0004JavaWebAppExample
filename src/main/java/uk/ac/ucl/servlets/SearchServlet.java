@@ -15,6 +15,8 @@ public class SearchServlet extends AbstractGetRequestServlet implements DataFram
         if (query == null || query.trim().isEmpty()) {
             throw new UserErrorException("Search string is empty");
         }
+        // this corresponds to DataFrames that are due to more complex searches that include more than one query
+        // E.g. ViewInhabitantsServlet
         String existingSearch = request.getParameter("search");
         if (existingSearch != null) {
             try {
@@ -33,6 +35,7 @@ public class SearchServlet extends AbstractGetRequestServlet implements DataFram
             } catch (NullPointerException | IllegalArgumentException e) {
                 throw new UserErrorException("Invalid target type or no target type provided");
             }
+            // We can run a search with a valid data type and id
             final SearchBuilder builder = new SearchBuilder(type);
             if (id != null) {
                     builder.addQuery(id)
@@ -43,7 +46,7 @@ public class SearchServlet extends AbstractGetRequestServlet implements DataFram
                     .build().execute();
         }
     }
-
+    // the column corresponding to the patient id has different names depending on data type
     private String getAppropriateIDColumn(HospitalDataType type) {
         return type == HospitalDataType.GENERAL ? "ID" : "PATIENT";
     }
@@ -53,6 +56,6 @@ public class SearchServlet extends AbstractGetRequestServlet implements DataFram
         if (req.getParameter("search") == null && (req.getParameter("type")) == null) {
             throw new UserErrorException("Wrong parameters");
         }
-        req.setAttribute("search", true);
+        req.setAttribute("search", true); // so that we can't search within search results
     }
 }

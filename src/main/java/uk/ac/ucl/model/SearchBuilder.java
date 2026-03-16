@@ -5,10 +5,14 @@ import jakarta.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This class facilitates programmatically creating searches and chaining them. The vast majority of operations
+ * performed on data by the server involves searching so this is an important class.
+ */
 public class SearchBuilder {
     private final List<SearchComponent> components = new ArrayList<>();
     private SearchComponent current;
-    private HospitalDataType dataType;
+    private final HospitalDataType dataType;
 
     public SearchBuilder(@Nonnull HospitalDataType dataType) {
         this.dataType = dataType;
@@ -28,7 +32,7 @@ public class SearchBuilder {
         return this;
     }
 
-    public SearchBuilder usingMatcher(StringMatcher matcher) {
+    public SearchBuilder usingMatcher(@Nonnull StringMatcher matcher) {
         if (current == null) {
             throw new IllegalArgumentException("No query specified!");
         }
@@ -36,27 +40,16 @@ public class SearchBuilder {
         return this;
     }
 
-    public SearchBuilder includingColumns(List<String> columnNames) {
-        if (current == null) {
-            throw new IllegalArgumentException("No query specified!");
-        }
-        current.setColumns(columnNames);
-        return this;
-    }
-
-    public SearchBuilder includingColumns(String... columnNames) {
+    public SearchBuilder includingColumns(@Nonnull String... columnNames) {
         if (current == null) {
             throw new IllegalArgumentException("No query specified!");
         }
         current.setColumns(List.of(columnNames));
         return this;
     }
-    public SearchBuilder matchingExactly(String column, String value) {
+    // Shorthand for searching for an exact match in one column
+    public SearchBuilder matchingExactly(@Nonnull String column, @Nonnull String value) {
         addQuery(value).includingColumns(column).usingMatcher(StringMatcher.EXACT);
-        return this;
-    }
-    public SearchBuilder changeType(HospitalDataType dataType) {
-        this.dataType = dataType;
         return this;
     }
 

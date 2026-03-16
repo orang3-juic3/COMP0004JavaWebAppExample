@@ -3,7 +3,6 @@ package uk.ac.ucl.model;
 import jakarta.annotation.Nonnull;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 
@@ -44,13 +43,16 @@ public class SearchComponent {
 
     @Override
     public boolean equals(Object o) {
+        if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         SearchComponent that = (SearchComponent) o;
-        return Objects.equals(matcher, that.matcher) && Objects.equals(searchTerm, that.searchTerm) && new HashSet<>(columns).equals(new HashSet<>(that.columns));
+        return matcher == that.matcher &&
+                Objects.equals(searchTerm, that.searchTerm) &&
+                Objects.equals(columns, that.columns);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(matcher, searchTerm, new HashSet<>(columns));
+        return Objects.hash(matcher, searchTerm, columns);
     }
 }

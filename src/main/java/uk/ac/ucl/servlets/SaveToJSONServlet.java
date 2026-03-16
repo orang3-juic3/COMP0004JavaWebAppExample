@@ -10,6 +10,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import uk.ac.ucl.main.Config;
 import uk.ac.ucl.model.DataFrame;
 import uk.ac.ucl.model.HospitalDataType;
 import uk.ac.ucl.model.Model;
@@ -38,14 +39,16 @@ public class SaveToJSONServlet extends AbstractGetRequestServlet {
             String searchParam = req.getParameter("search");
             String typeParam = req.getParameter("type");
             String idParam = req.getParameter("id");
+            // Prioritise saving data if we can reconstruct a DataFrame from the search parameter
             if (searchParam != null && !searchParam.isEmpty()) {
                 targetDataFrame = Search.deserialize(searchParam).execute();
             } else if (typeParam != null) {
                 HospitalDataType type = HospitalDataType.valueOf(typeParam);
-                if (idParam != null && !idParam.isEmpty()) {
+                if (idParam != null && !idParam.isEmpty()) { // if we can narrow the search to a data type and an id
                     SearchBuilder searchBuilder = new SearchBuilder(type)
                             .addQuery(idParam)
                             .usingMatcher(StringMatcher.EXACT);
+                    // the column corresponding to the patient id has different names depending on data type
                     if (type == HospitalDataType.GENERAL) {
                         searchBuilder.includingColumns("ID");
                     } else {
@@ -56,7 +59,7 @@ public class SaveToJSONServlet extends AbstractGetRequestServlet {
                     targetDataFrame = Model.getInstance().getFrame(type);
                 }
             }
-
+            // e.g. if the only param is a patient id, since we cannot construct a DataFrame from that
             if (targetDataFrame == null) {
                 throw new UserErrorException("No parameters provided to resolve DataFrame");
             }
@@ -72,7 +75,7 @@ public class SaveToJSONServlet extends AbstractGetRequestServlet {
                     throw new UserErrorException("Invalid page number format.");
                 }
             }
-            ArrayNode jsonArray = dataframeToJson(targetDataFrame, page);
+            ArrayNode jsonArray = dataFrameToJson(targetDataFrame, page);
             res.setContentType("application/json");
             res.setCharacterEncoding("UTF-8");
             res.setHeader("Content-Disposition", "attachment; filename=\"data.json\"");
@@ -89,23 +92,23 @@ public class SaveToJSONServlet extends AbstractGetRequestServlet {
 
     }
 
-    private ArrayNode dataframeToJson(DataFrame df, int page) {
+    private ArrayNode dataFrameToJson(DataFrame dataFrame, int page) {
         ArrayNode arrayNode = mapper.createArrayNode();
-        List<String> cols = df.getColumnNames();
+        List<String> cols = dataFrame.getColumnNames();
         int startRow = 0;
-        int endRow = df.getRowCount();
+        int endRow = dataFrame.getRowCount();
         if (page >= 0) {
-            int pageSize = Model.RESULTS_PER_PAGE;
+            int pageSize = Config.RESULTS_PER_PAGE;
             startRow = page * pageSize;
-            endRow = Math.min(startRow + pageSize, df.getRowCount());
-            if (startRow >= df.getRowCount() && df.getRowCount() > 0) {
+            endRow = Math.min(startRow + pageSize, dataFrame.getRowCount());
+            if (startRow >= dataFrame.getRowCount() && dataFrame.getRowCount() > 0) {
                 throw new UserErrorException("Page number out of bounds.");
             }
         }
         for (int i = startRow; i < endRow; i++) {
             ObjectNode rowNode = mapper.createObjectNode();
             for (String col : cols) {
-                rowNode.put(col, df.getValue(col, i));
+                rowNode.put(col, dataFrame.getValue(col, i));
             }
             arrayNode.add(rowNode);
         }

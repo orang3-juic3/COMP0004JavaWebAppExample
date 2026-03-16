@@ -1,5 +1,9 @@
 package uk.ac.ucl.model;
 
+/**
+ * An enum that contains all the different types of data displayed by the website. All other DataFrames shown by the
+ * website are subsets of the DataFrame corresponding to an arbitrary enum value.
+ */
 public enum HospitalDataType {
     GENERAL("General Patient Information"),
     ALLERGIES("Allergies"),

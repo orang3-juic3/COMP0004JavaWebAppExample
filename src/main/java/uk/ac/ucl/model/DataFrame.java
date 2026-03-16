@@ -25,10 +25,10 @@ public class DataFrame implements Iterable<Column> {
 
     /**
      * The addColumn method will attempt to add a column into the backing collection in the DataFrame.
-     * If there is a column with the same name, this method will throw an IllegalArgumentException.
+     * If there is a column with the same name, or the column does not have the same size as the others
+     * this method will throw an IllegalArgumentException.
      * Furthermore, it is the controller's responsibility to ensure Column instances passed as arguments
      * are not null.
-     * It is also up to the controller to decide how to handle partially filled rows.
      */
     public void addColumn(@Nonnull Column column) {
         if (columns.isEmpty()) {
@@ -38,6 +38,11 @@ public class DataFrame implements Iterable<Column> {
         if (columns.containsKey(column.getName())) {
             throw new IllegalArgumentException("Column already exists: " + column);
         }
+        columns.values().stream().findAny().ifPresent(any -> {
+            if (any.getSize() != column.getSize()) {
+                throw new IllegalArgumentException("Column does not have the same size: " + column);
+            }
+        });
         columns.put(column.getName(), column);
     }
 
@@ -67,14 +72,6 @@ public class DataFrame implements Iterable<Column> {
     public void addValue(@Nonnull String columnName, @Nullable String value) {
         final Column column = getOrThrow(columnName);
         column.addRowValue(value);
-    }
-
-    public void removeColumn(@Nonnull String columnName) {
-        columns.remove(columnName);
-    }
-
-    public void removeRow(int row) {
-        columns.values().forEach(column -> column.removeRowValue(row));
     }
 
     @Override @Nonnull

@@ -6,15 +6,19 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import uk.ac.ucl.main.Config;
 import uk.ac.ucl.model.DataFrame;
-import uk.ac.ucl.model.Model;
 import uk.ac.ucl.model.UserErrorException;
 
 import java.io.IOException;
 
+/**
+ * A base class for all GET requests received by the server.
+ * Subclasses will automatically reject any request that is not a GET request.
+ * For subclasses that are also instances of {@link DataFrameDisplayer}, this class will forward the appropriate data
+ * frame and implement pagination.
+ */
 public abstract class AbstractGetRequestServlet extends HttpServlet {
-
-    // Refuse any request that is not a GET
     @Override
     protected final void service(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         String method = req.getMethod();
@@ -26,6 +30,10 @@ public abstract class AbstractGetRequestServlet extends HttpServlet {
             dispatch.forward(req, res);
         }
     }
+    /*
+    Although behaviour is very similar across all subclasses, sometimes the endpoint may be different.
+    Therefore, this method provides a default jsp but can be overridden
+     */
     protected String getTargetJspPage() {
         return "/dataFrameDisplay.jsp";
     }
@@ -39,13 +47,14 @@ public abstract class AbstractGetRequestServlet extends HttpServlet {
             handleRequest(req);
             handleDataFrame(req);
             dispatch = context.getRequestDispatcher(getTargetJspPage());
-        } catch (UserErrorException e) {
+        } catch (UserErrorException e) { // If it is the user's fault
             dispatch = context.getRequestDispatcher("/404.jsp");
-        } catch (RuntimeException e) {
+        } catch (RuntimeException e) { // If it is the server's fault
             dispatch = context.getRequestDispatcher("/500.jsp");
         }
         dispatch.forward(req, res);
     }
+
     private void handleDataFrame(HttpServletRequest req) {
         if (this instanceof DataFrameDisplayer) {
             final DataFrame toDisplay = ((DataFrameDisplayer) this).computeDataFrame(req);
@@ -56,7 +65,7 @@ public abstract class AbstractGetRequestServlet extends HttpServlet {
                 try {
                     int page = Integer.parseInt(req.getParameter("page"));
                     req.setAttribute("page", page);
-                    if (page < 0 || page * Model.RESULTS_PER_PAGE> toDisplay.getRowCount() - 1 ) {
+                    if (page < 0 || page * Config.RESULTS_PER_PAGE> toDisplay.getRowCount() - 1 ) {
                         throw new NumberFormatException();
                     }
                 } catch (NumberFormatException e) {
